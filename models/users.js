@@ -29,7 +29,19 @@ module.exports = (sequelize, DataTypes) => {
     },
     sequelize,
     modelName: 'Users',
+
   });
+
+    Users.associate = (models) => {
+      Users.hasMany(models.Courses, { 
+        foreignKey: {
+          fieldName: 'userId', 
+          allowNull: false,
+        },    
+      });
+    };
+  
+
   return Users;
 };
 

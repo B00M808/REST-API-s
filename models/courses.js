@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+const { Sequelize } = require('.');
 module.exports = (sequelize, DataTypes) => {
   class Courses extends Model {
     /**
@@ -15,6 +16,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Courses.init({
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     title: {
       type: DataTypes.STRING,
     },
@@ -30,6 +36,13 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Courses',
   });
+  Courses.associate = (models) => {
+    Courses.belongsTo(models.Users, { 
+      foreignKey: {
+        fieldName: 'userId',
+        allowNull: false,
+      }    
+    },
+  )};
   return Courses;
 };
-

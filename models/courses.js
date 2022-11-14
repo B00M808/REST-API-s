@@ -2,7 +2,6 @@
 const {
   Model
 } = require('sequelize');
-const { Sequelize } = require('.');
 module.exports = (sequelize, DataTypes) => {
   class Courses extends Model {
     /**
@@ -17,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Courses.init({
     id: {
-      type: Sequelize.INTEGER,
+      type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
@@ -32,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     materialsNeeded: {
       type: DataTypes.STRING,
-  },
+  }}, {
     sequelize,
     modelName: 'Courses',
   });

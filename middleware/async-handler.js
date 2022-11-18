@@ -9,3 +9,15 @@ exports.asyncHandler = (db) => {
       }
     }
   }
+
+  /* Middleware Async Handler with 500 Error Status 
+const asyncHandler = (function) => {
+  return async(req, res, next ) => {
+    try {
+      await function(req, res, next) =>
+    } catch(error){
+      res.status(500).send(error)
+    }
+  }
+}
+  */

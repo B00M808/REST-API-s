@@ -1,8 +1,8 @@
 'use strict';
-
+const express = require('express');
 const auth = require('basic-auth');
-//const bcrypt = require('bcrypt');
-const { User } = require('../models');
+//const bcrypt = require('bcryptjs');
+const { User } = require('../models').Users;
 
 
 /**
@@ -16,10 +16,13 @@ const { User } = require('../models');
     let message;
   
     const credentials = auth(req);
+    const users = await Users.findAll();
+    const user = users.find(user.emailAddress === credentials.name);
   
     if (credentials) {
       const user = await User.findOne({ where: {username: credentials.name} });
       if (user) {
+        //Validate User's password to the Authorization Header
         const authenticated = bcrypt
           .compareSync(credentials.pass, user.confirmedPassword);
         if (authenticated) {
@@ -43,4 +46,8 @@ const { User } = require('../models');
     } else {
       next();
     }
+  };
+
+  module.exorts = {
+    authenticateUser
   };

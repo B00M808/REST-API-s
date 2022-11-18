@@ -1,4 +1,7 @@
 'use strict';
+
+//require bcrypt
+
 const {
   Model
 } = require('sequelize');
@@ -19,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
     },
    lastName: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING,
     },
     emailAddress: {
       type: DataTypes.STRING,

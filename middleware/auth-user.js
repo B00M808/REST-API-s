@@ -1,9 +1,8 @@
 'use strict';
-const express = require('express');
+//const express = require('express');
+const bcrypt = require('bcryptjs');
+const { User } = require("../models");
 const auth = require('basic-auth');
-//const bcrypt = require('bcryptjs');
-const { User } = require('../models').Users;
-
 
 /**
  * Middleware to authenticate the request using Basic Authentication.
@@ -16,15 +15,12 @@ const { User } = require('../models').Users;
     let message;
   
     const credentials = auth(req);
-    const users = await Users.findAll();
-    const user = users.find(user.emailAddress === credentials.name);
   
     if (credentials) {
-      const user = await User.findOne({ where: {username: credentials.name} });
+      const user = await User.findOne({ where: {emailAddress: credentials.name} });
       if (user) {
         //Validate User's password to the Authorization Header
-        const authenticated = bcrypt
-          .compareSync(credentials.pass, user.confirmedPassword);
+        const authenticated = bcrypt.compareSync(credentials.pass, user.password);
         if (authenticated) {
           console.log(`Authentication successful for username: ${user.username}`);
   
@@ -46,8 +42,4 @@ const { User } = require('../models').Users;
     } else {
       next();
     }
-  };
-
-  module.exorts = {
-    authenticateUser
   };

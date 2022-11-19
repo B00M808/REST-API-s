@@ -1,9 +1,12 @@
 'use strict';
+
+//require bcrypt
+
 const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Courses extends Model {
+  class User extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -14,34 +17,34 @@ module.exports = (sequelize, DataTypes) => {
       
     }
   }
-  Courses.init({
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    title: {
+  User.init({
+    firstName: {
       type: DataTypes.STRING,
     },
-   description: {
-      type: DataTypes.TEXT,
-    },
-    estimatedTime: {
+   lastName: {
       type: DataTypes.STRING,
     },
-    materialsNeeded: {
+    emailAddress: {
       type: DataTypes.STRING,
-  }}, {
+    },
+    password: {
+      type: DataTypes.STRING,
+    }}, {
     sequelize,
-    modelName: 'Courses',
+    modelName: 'User',
+
   });
-  Courses.associate = (models) => {
-    Courses.belongsTo(models.Users, { 
-      foreignKey: {
-        fieldName: 'userId',
-        allowNull: false,
-      }    
-    },
-  )};
-  return Courses;
+
+    User.associate = (models) => {
+      User.hasMany(models.Course, { 
+        foreignKey: {
+          fieldName: 'userId', 
+          allowNull: false,
+        },    
+      });
+    };
+  
+
+  return User;
 };
+

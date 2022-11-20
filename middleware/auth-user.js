@@ -1,15 +1,8 @@
 'use strict';
-//const express = require('express');
+
 const bcrypt = require('bcryptjs');
 const { User } = require("../models");
 const auth = require('basic-auth');
-
-/**
- * Middleware to authenticate the request using Basic Authentication.
- * @param {Request} req - The Express Request object.
- * @param {Response} res - The Express Response object.
- * @param {Function} next - The function to call to pass execution to the next middleware.
- */
 
  exports.authenticateUser = async (req, res, next) => {
     let message;

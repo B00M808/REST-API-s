@@ -99,25 +99,30 @@ router.post('/courses', authenticateUser, asyncHandler(async(req,res) => {
   Validation Added ensuring the following values are submitted in the request body otherwise, 400 error
   Authentication Middleware allocated
 */
-  router.put('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
+router.put(
+  "/courses/:id", authenticateUser, asyncHandler(async (req, res) => {
+    let course;
     try {
-    let course = await Course.findByPk(req.params.id) 
-    if (req.currentUser.id === course.userId) {
-    if (course) {
-      await course.update(req.body);
-      res.sendStatus(204);
-    } else {
-      res.sendStatus(404).json({ message: "Course Not Found" });
-    } 
-  } else {
-    res.sendStatus(401).json({ message: "Access Denied" });
-    }
-  } catch (error) {
-    if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
-      const errors = error.errors.map(err => err.message);
-      res.status(400).json({ errors });   
-    } else {
-      throw error;
+      course = await Course.findByPk(req.params.id);
+      if (course) {
+        if (course.userId === req.body.userId) {
+          await course.update(req.body);
+          res.status(204).end();
+        } else {
+          res.status(403).json({ message: "user not authenticated" });
+        }
+      } else {
+        res.status(404).json({ message: "Course was not found" });
+      }
+    } catch (error) {
+      if (
+        error.name === "SequelizeValidationError" ||
+        error.name === "SequelizeUniqueConstraintError"
+      ) {
+        const errors = error.errors.map((err) => err.message);
+        res.status(400).json({ errors });
+      } else {
+        throw error;
       }
     }
   })

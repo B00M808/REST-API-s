@@ -53,18 +53,17 @@ app.use((err, req, res, next) => {
 // set our port
 app.set('port', process.env.PORT || 5000);
 
-/*Database test connection
-//force: true param completely drops a table and re-creates it afterwards each time the app is started. Remove once working in project
+//Database test connection
 (async () => {
   try {
-    await Sequelize.sync({ force: true });
+    await Sequelize.sync();
     await Sequelize.authenticate();
     console.log("Connection to the database successful!");
   } catch (error) {
     console.error("Error connecting to the database: ", error);
   }
 })();
-*/
+
 // start listening on our port
 const server = app.listen(app.get('port'), () => {
   console.log(`Express server is listening on port ${server.address().port}`);

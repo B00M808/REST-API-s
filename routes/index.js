@@ -132,16 +132,16 @@ router.put(
   Authentication Middleware allocated */
   router.delete('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
       try {
-        const course = await Course.findByPk(req.params.id) 
+        const course = await Course.findByPk(req.params.id)
+        if (course) { 
         if (req.currentUser.id === course.userId) {
-        if (course) {
           await course.destroy();
           res.sendStatus(204);
         } else {
-          res.sendStatus(404).json({ message: "Course Not Found" });
+          res.sendStatus(403).json({ message: "Access Denied" });
         } 
       } else {
-        res.sendStatus(401).json({ message: "Access Denied" });
+        res.sendStatus(404).json({ message: "Course Not Found" });
         }
       } catch (error) {
         if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {

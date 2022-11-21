@@ -27,15 +27,15 @@ const asyncHandler = (db) => {
 /*GET Returns all properties and values for the currently authenticated User along with a 200 HTTP
 A protected/private route used to retrieve the current user's info */
 router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
-  const user = req.currentUser;
+const user = req.currentUser;
 console.log(user);
-  res.json({
+res.status(200).json({
     firstName: user.firstName,
     lastName: user.lastName,
     emailAddress: user.emailAddress,
-    password: user.password
+   //Does a password go here? CHECK password: user.password
   });
-  res.status(200).end();
+ 
 }));
 
 /* POST Creates a new user, set the Location header to "/" and returns a 201 HTTP and no content
@@ -49,7 +49,7 @@ router.post('/users', asyncHandler(async (req, res) => {
     res.status(201).location('/').end();
   } catch (error) {
     if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
-      const errors = error.errors.map(err => err.message);
+      const errors = error.errors.map((err) => err.message);
       res.status(400).json({ errors });   
     } else {
       throw error;
@@ -74,13 +74,17 @@ router.post('/users', asyncHandler(async (req, res) => {
     }));  
  
 /*POST Creates a new course, sets the Location header to the URI for the newly created course, and returns a 201 HTTP and no content
-  Validation Added ensuring the following values are submitted in the request body otherwise, 400 error
+  Validation Added ensuring the following values are submitted in the request body otherwise, 400/401 error
   Authentication Middleware allocated
 */
 router.post('/courses', authenticateUser, asyncHandler(async(req,res) => {
   try {
+    if (req.currentUser) {
     const course = await Course.create(req.body);
-    res.status(201).location('/').end();
+    res.status(201).location('/courses/' + `${course.id}`).end();
+    } else {
+      res.status(401).json({message: "You don't have access to update this course."});
+    }
   } catch (error) {
     if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
       const errors = error.errors.map(err => err.message);
@@ -96,19 +100,14 @@ router.post('/courses', authenticateUser, asyncHandler(async(req,res) => {
   Authentication Middleware allocated
 */
   router.put('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
-    const user = req.currentUser;
     try {
-    const course = await Course.findByPk(req.params.id, {
-      include: {
-      model: User,
-    },
-  });
-  if (user.emailAddress === course.User.emailAddress) {
+    let course = await Course.findByPk(req.params.id) 
+    if (req.currentUser.id === course.userId) {
     if (course) {
       await course.update(req.body);
       res.sendStatus(204);
     } else {
-      res.sendStatus(404);
+      res.sendStatus(404).json({ message: "Course Not Found" });
     } 
   } else {
     res.sendStatus(401).json({ message: "Access Denied" });
@@ -127,20 +126,28 @@ router.post('/courses', authenticateUser, asyncHandler(async(req,res) => {
   /*Delete the corresponding course and return a 204 HTTP and no content
   Authentication Middleware allocated */
   router.delete('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
-    const user = req.currentUser;
-    const course = await Course.findByPk(req.params.id, {
-      include: User,
-    });
-      if (user.emailAddress === course.User.emailAddress) {
+      try {
+        const course = await Course.findByPk(req.params.id) 
+        if (req.currentUser.id === course.userId) {
         if (course) {
-        await course.destroy();
-        res.sendStatus(204);
+          await course.destroy();
+          res.sendStatus(204);
+        } else {
+          res.sendStatus(404).json({ message: "Course Not Found" });
+        } 
       } else {
-        res.sendStatus(404);
+        res.sendStatus(401).json({ message: "Access Denied" });
         }
-      } 
-    })
-  );  
+      } catch (error) {
+        if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+          const errors = error.errors.map(err => err.message);
+          res.status(404).json({ errors });   
+        } else {
+          throw error;
+         }
+        }
+      })   
+  );
     
   
  

@@ -25,10 +25,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
         validate: {
           notNull: {
-            msg: "A title is required",
+            msg: "Please enter a title for your course.",
           },
           notEmpty: {
-            msg: "Please provide a title",
+            msg: "Please provide a title.",
         },
       },
     },
@@ -49,7 +49,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     materialsNeeded: {
       type: DataTypes.STRING,
-  }}, {
+  }}, 
+  {
     sequelize,
     modelName: 'Course',
   });

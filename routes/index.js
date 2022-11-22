@@ -29,11 +29,11 @@ A protected/private route used to retrieve the current user's info */
 router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
 const user = req.currentUser;
 console.log(user);
-res.status(200).json({
+  res.status(200).json({
+    userId: user.id,
     firstName: user.firstName,
     lastName: user.lastName,
-    emailAddress: user.emailAddress,
-   //Does a password go here? CHECK password: user.password
+    emailAddress: user.emailAddress, 
   });
  
 }));
@@ -61,14 +61,24 @@ router.post('/users', asyncHandler(async (req, res) => {
 
 //GET Returns all courses including the User associated with each course and a 200 HTTP 
   router.get('/courses', asyncHandler(async (req, res) => {
-    const courses = await Course.findAll();
+    const courses = await Course.findAll({
+        include: {
+        model: User, 
+        attributes: ['firstName', 'lastName', 'emailAddress']
+        }
+      });
     res.send(courses);
     res.status(200).end();
     }));  
 
  // GET Return the corresponding Course including the User associated with that Course and a 200 HTTP 
   router.get('/courses/:id', asyncHandler(async (req, res) => {
-    const course = await Course.findByPk(req.params.id)
+    const course = await Course.findByPk(req.params.id, {
+      include: {
+      model: User, 
+      attributes: ['firstName', 'lastName', 'emailAddress']
+      }
+    })
     res.send(course);
     res.status(200).end();
     }));  
@@ -105,7 +115,7 @@ router.put(
     try {
       course = await Course.findByPk(req.params.id);
       if (course) {
-        if (course.userId === req.body.userId) {
+        if (course.userId === req.currentUser.id) {
           await course.update(req.body);
           res.status(204).end();
         } else {
@@ -138,10 +148,10 @@ router.put(
           await course.destroy();
           res.sendStatus(204);
         } else {
-          res.sendStatus(403).json({ message: "Access Denied" });
+          res.status(403).json({ message: "Access Denied" });
         } 
       } else {
-        res.sendStatus(404).json({ message: "Course Not Found" });
+        res.status(404).json({ message: "Course Not Found" });
         }
       } catch (error) {
         if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {

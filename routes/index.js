@@ -96,8 +96,6 @@ router.post('/users', asyncHandler(async (req, res) => {
       res.status(404);
       next();
   }
-    res.send(course);
-    res.status(200).end();
     }));  
  
 /*POST Creates a new course, sets the Location header to the URI for the newly created course, and returns a 201 HTTP and no content

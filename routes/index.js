@@ -70,7 +70,7 @@ router.post('/users', asyncHandler(async (req, res) => {
       const newCourses = courses.map( ({ id, title, description, estimatedTime, materialsNeeded, userId, User}) => {
       return { id, title, description, estimatedTime, materialsNeeded, userId, User};
       });
-    res.send(courses);
+    res.send(newCourses);
     res.status(200).end();
     }));  
 

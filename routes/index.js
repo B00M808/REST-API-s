@@ -67,6 +67,9 @@ router.post('/users', asyncHandler(async (req, res) => {
         attributes: ['firstName', 'lastName', 'emailAddress']
         }
       });
+      const newCourses = courses.map( ({ id, title, description, estimatedTime, materialsNeeded, userId, User}) => {
+      return { id, title, description, estimatedTime, materialsNeeded, userId, User};
+      });
     res.send(courses);
     res.status(200).end();
     }));  
@@ -79,6 +82,20 @@ router.post('/users', asyncHandler(async (req, res) => {
       attributes: ['firstName', 'lastName', 'emailAddress']
       }
     })
+    if (course) {
+      res.status(200).json({
+          "id": course.id,
+          "title": course.title,
+          "description": course.description,
+          "estimatedTime": course.estimatedTime,
+          "materialsNeeded": course.materialsNeeded,
+          "userId": course.userId,
+          "User": course.User
+      });
+  } else {
+      res.status(404);
+      next();
+  }
     res.send(course);
     res.status(200).end();
     }));  
